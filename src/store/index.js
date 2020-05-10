@@ -18,7 +18,9 @@ export default new Vuex.Store({
         countOfChildren: 0,
         countOfFirstLine: "0",
         selfVolume: 0,
-        children: []
+        children: [],
+        deepLvl: 1,
+        root: true
       });
     },
     ADD_CARD(state, [card, data]) {
@@ -37,10 +39,11 @@ export default new Vuex.Store({
           lastName: `${card.parentName}-${card.children.length}`,
           groupVolume: "0.00",
           groupVolumeProgressBar: 0,
-          countOfChildren: 0,
+          countOfChildren: card.children && card.children.length ? card.children.length : 0,
           countOfFirstLine: "0",
           selfVolume: 0,
-          children: []
+          children: [],
+          deepLvl: card.deepLvl + 1
         }
         commit('ADD_CARD', [card, data]);
       }

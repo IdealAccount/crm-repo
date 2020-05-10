@@ -1,27 +1,33 @@
 <template>
-  <div class="user-container">
-    <div class="user" :class="{'tree-line-to': hasChildren}">
-      <div class="user__top">
-        <button class="user__top-name">{{fullName}}</button>
+  <transition name="appear" appear>
+    <div class="user-container"
+         ref="container"
+         :class="{root: card.root}"
+    >
+      <div class="user" :class="{'tree-line-to': hasChildren}">
+        <div class="user__top">
+          <button class="user__top-name">{{fullName}}</button>
+        </div>
+        <div class="user__line">
+          <span title="0">ЛО: {{selfVolume}}</span>
+          <span title="0">ГО: 0</span>
+          <span title="0">Ранг: R</span>
+        </div>
+        <div class="structure__table-about-progress progress">
+          <div class="structure__table-about-progress-inner" :style="{width: progressBar + '%'}"></div>
+        </div>
+        <button class="user__add"
+                @click="createCard(card)"
+        >+
+        </button>
       </div>
-      <div class="user__line">
-        <span title="0">ЛО: {{selfVolume}}</span>
-        <span title="0">ГО: 0</span>
-        <span title="0">Ранг: R</span>
-      </div>
-      <div class="structure__table-about-progress progress">
-        <div class="structure__table-about-progress-inner" :style="{width: progressBar + '%'}"></div>
-      </div>
-      <button class="user__add"
-              @click="createCard(card)"
-      >+</button>
+      <user-children ref="children" v-if="hasChildren" :cardList="card.children"></user-children>
     </div>
-    <user-children v-if="hasChildren" :cardList="card.children"></user-children>
-  </div>
+  </transition>
 </template>
 
 <script>
-  import { mapActions } from "vuex"
+  import {mapActions} from "vuex"
   import UserChildren from "./UserChildren";
 
   export default {
@@ -32,6 +38,11 @@
       card: {
         type: Object,
         require: true,
+      },
+    },
+    data() {
+      return {
+        myParent: null,
       }
     },
     computed: {
@@ -53,7 +64,7 @@
       createCard(card) {
         this.$set(card, 'fullName', this.fullName);
         this.add_card(card);
-      }
+      },
     }
   }
 </script>
@@ -76,14 +87,30 @@
     transition: all .5s ease;
     transform: translate(0);
     box-shadow: 0 0 5px rgba(0, 0, 0, .5);
-    &:hover {
-      box-shadow: 0 0 10px rgba(0,0,0,.8);
+
+    &:after {
+      content: '';
+      display: block;
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translate(100%, -50%);
+      background: rgba(#000, .7);
+      height: 1px;
+      width: 100%;
+      max-width: 0;
     }
+
+    &:hover {
+      box-shadow: 0 0 10px rgba(0, 0, 0, .8);
+    }
+
     &__top {
       display: flex;
       align-items: center;
       justify-content: space-between;
       width: 100%;
+
       &-name {
         font-size: 12px;
         color: #000;
@@ -96,6 +123,7 @@
         text-overflow: ellipsis;
         background: none;
         border: none;
+
         &:after {
           position: absolute;
           top: 2px;
@@ -108,6 +136,7 @@
         }
       }
     }
+
     &__line {
       width: 100%;
       height: 15px;
@@ -125,6 +154,7 @@
         text-overflow: ellipsis;
       }
     }
+
     &__add {
       position: absolute;
       z-index: 20;
@@ -140,13 +170,16 @@
       transition: .3s;
       cursor: pointer;
       outline: none;
+
       &:hover {
         background: #fff;
       }
+
       &:active {
         box-shadow: 0 0 3px rgba(0, 0, 0, .3);
       }
     }
+
     &-container {
       position: relative;
       display: flex;
@@ -159,25 +192,14 @@
     border-radius: 5px;
     height: 4px;
     width: 100%;
+
     &-inner {
       background: #738bd9;
     }
   }
 
-  .tree-line-to {
-    &:after {
-      content: '';
-      position: absolute;
-      right: 0;
-      top: 50%;
-      transform: translate(100%, -50%);
-      background: rgba(#000, .7);
-      display: block;
-      height: 1px;
-      width: 56px;
-    }
+  .tree-line-to:after {
+    animation: lazyAppear .6s forwards ease;
   }
-  .tree-line:after {
 
-  }
 </style>

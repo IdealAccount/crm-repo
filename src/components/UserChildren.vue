@@ -1,10 +1,13 @@
 <template>
   <div class="children-container"
-       ref="childrenContainer"
+       ref="container"
   >
-    <ul class="card-list"
-        v-if="cardList"
-        :class="{'tree-line-from': cardList.length > 1}"
+    <transition-group
+      class="card-list"
+      v-if="cardList"
+      :class="{'tree-line-from': cardList.length > 1}"
+      tag="ul"
+      name="card-appear"
     >
       <li v-for="(card, index) of cardList"
           :key="index"
@@ -17,8 +20,7 @@
            &times;
          </button>
        </li>-->
-    </ul>
-    <span class="vertical-line" :data-height="height" :style="{height}"></span>
+    </transition-group>
   </div>
 
 </template>
@@ -31,36 +33,8 @@
     props: {
       cardList: {
         type: Array
-      }
-    },
-    data() {
-      return {
-        height: null,
-        heightOfChildrenContainer: null,
-        collectionLi: null,
-        heightOfLastLi: null,
-        heightOfFirstLi: null,
-      }
-    },
-    mounted() {
-      this.listUl = this.$refs.childrenContainer;
-      this.collectionLi = [...this.listUl.children]
-    },
-    computed: {
-      calcVerticalLineHeight() {
-        this.calcHalfHeightLi();
-        this.heightOfChildrenContainer = this.heightOfFirstLi + this.heightOfLastLi
-        // console.log(this.$refs.childrenContainer.clientHeight)
-        this.height = `calc(100% - ${this.heightOfChildrenContainer}px)`
-      }
-    },
-    methods: {
-      calcHalfHeightLi() {
-        this.heightOfFirstLi = this.collectionLi[0].clientHeight / 2;
-        this.heightOfLastLi = this.collectionLi[this.collectionLi.length - 1].clientHeight / 2;
-        console.log('first', this.heightOfFirstLi, 'last', this.heightOfLastLi)
       },
-    }
+    },
   }
 </script>
 
@@ -68,16 +42,6 @@
   .children-container {
     position: relative;
     margin-left: 55px;
-
-    .vertical-line {
-      position: absolute;
-      left: 0;
-      top: 50%;
-      transform: translateY(-50%);
-      height: calc(100% - 56px);
-      width: 2px;
-      background: rgba(#000, .3);
-    }
   }
 
   .card-list {
@@ -85,35 +49,80 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    align-items: flex-start;
     z-index: 50;
-  }
-
-  .tree-line-from {
-    padding-left: 20px;
-    position: relative;
-
-    .card-list__item {
+    &__item {
+      position: relative;
       margin-bottom: 20px;
-
       &:last-child {
         margin-bottom: 0;
       }
-    }
-
-    .user {
-      position: relative;
 
       &:before {
+        content: '';
+        position: absolute;
+        left: -50px;
+        width: 2px;
+        background: #ccc;
+        transition:  opacity .4s ease-in;
+        opacity: 0;
+      }
+
+      &:not(:last-child):before,
+      &:not(:first-child):before {
+        top: 50%;
+        height: calc(100% + 22px);
+        transform: translateY(-50%) scale(0) rotate(180deg);
+        transform-origin: 50% 100%;
+      }
+      &:first-child:before {
+        height: calc(50% + 11px);
+        transform: scale(0);
+        transform-origin: 50% 100%;
+      }
+      &:last-child:before {
+        height: calc(50% + 11px);
+        transform: scale(0);
+        top: -11px;
+        transform-origin: 50% 0%;
+      }
+
+    }
+  }
+
+  .tree-line-from {
+    padding-left: 50px;
+    & > .card-list__item {
+      &:before {
+        transform: translateY(-50%) scale(1);
+        opacity: 1;
+      }
+      &:first-child:before {
+        transform: scale(1);
+      }
+      &:last-child:before {
+        transform: scale(1);
+      }
+
+      &:after {
         content: '';
         position: absolute;
         top: 50%;
         left: 0;
         height: 1px;
-        width: 20px;
+        width: 50px;
         background: rgba(#000, .7);
         transform: translate(-100%, -50%);
+        transition: .3s ease;
       }
     }
+
+
+   /* & ~ .user {
+      position: relative;
+
+
+    }*/
   }
 
   .card__item-btn {

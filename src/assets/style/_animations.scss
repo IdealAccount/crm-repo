@@ -1,0 +1,51 @@
+//.lazy-line {
+//  max-width: 0;
+//
+//}
+
+@keyframes lazyAppear {
+  100% {
+    max-width: 56px
+  }
+}
+@keyframes appearLine {
+  100% {
+    max-height: calc(100% + 20px);
+  }
+}
+@keyframes appearHalfLine {
+  100% {
+    max-height: calc(50% + 11px);
+  }
+}
+
+
+.appear-enter-active {
+  transition: .4s ease;
+}
+.appear-enter {
+  opacity: 0;
+  transform: translateX(10px)
+}
+.appear-enter-to {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.card-appear-enter-active,
+.card-appear-leave-active {
+  transition: transform .4s ease-in, opacity .6s ease;
+}
+
+.card-appear-enter,
+.card-appear-leave-to {
+  opacity: 0;
+  transform: translateY(10px);
+  //transform: scale(.8);
+}
+.card-appear-enter-to,
+.card-appear-leave {
+  opacity: 1;
+  transform: translateY(0);
+  //transform: scale(1);
+}
